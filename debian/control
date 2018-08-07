@@ -1,0 +1,12 @@
+Source: ox-bash-completion
+Section: admin
+Priority: optional
+Maintainer: Carsten Hoeger <choeger@open-xchange.com>
+Build-Depends: cdbs, debhelper
+Standards-Version: 3.9.8
+Homepage: http://www.open-xchange.com
+
+Package: ox-bash-completion
+Architecture: all
+Depends: ${misc:Depends}, bash-completion
+Description: Bash completion for Open-Xchange

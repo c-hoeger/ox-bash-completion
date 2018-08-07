@@ -1,0 +1,2906 @@
+#
+#
+#   OPEN-XCHANGE legal information
+#
+#   All intellectual property rights in the Software are protected by
+#   international copyright laws.
+#
+#
+#   In some countries OX, OX Open-Xchange, open xchange and OXtender
+#   as well as the corresponding Logos OX Open-Xchange and OX are registered
+#   trademarks of the OX Software GmbH group of companies.
+#   The use of the Logos is not covered by the GNU General Public License.
+#   Instead, you are allowed to use these Logos according to the terms and
+#   conditions of the Creative Commons License, Version 2.5, Attribution,
+#   Non-commercial, ShareAlike, and the interpretation of the term
+#   Non-commercial applicable to the aforementioned license is published
+#   on the web site http://www.open-xchange.com/EN/legal/index.html.
+#
+#   Please make sure that third-party modules and libraries are used
+#   according to their respective licenses.
+#
+#   Any modifications to this package must retain all copyright notices
+#   of the original copyright holder(s) for the original code used.
+#
+#   After any such modifications, the original and derivative code shall remain
+#   under the copyright of the copyright holder(s) and/or original author(s)per
+#   the Attribution and Assignment Agreement that can be located at
+#   http://www.open-xchange.com/EN/developer/. The contributing author shall be
+#   given Attribution for the derivative code and a license granting use.
+#
+#    Copyright (C) 2016-2020 OX Software GmbH
+#    Mail: info@open-xchange.com
+#
+#
+#    This program is free software; you can redistribute it and/or modify it
+#    under the terms of the GNU General Public License, Version 2 as published
+#    by the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful, but
+#    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#    or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+#    for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc., 59
+#    Temple Place, Suite 330, Boston, MA 02111-1307 USA
+OXBINPATH=/opt/open-xchange/sbin
+MODULEACCESSFILE=/opt/open-xchange/etc/ModuleAccessDefinitions.properties
+JAVACLTCOREOPTS='
+    --help
+    --environment
+    --nonl
+    --responsetimeout
+'
+ACCESSCOMBINATIONOPTIONS='
+    --access-calendar
+    --access-contacts
+    --access-delegate-tasks
+    --access-edit-public-folder
+    --access-ical
+    --access-infostore
+    --access-read-create-shared-Folders
+    --access-syncml
+    --access-tasks
+    --access-vcard
+    --access-webdav
+    --access-webdav-xml
+    --access-webmail
+    --access-edit-group
+    --access-edit-resource
+    --access-edit-password
+    --access-collect-email-addresses
+    --access-multiple-mail-accounts
+    --access-subscription
+    --access-publication
+    --access-active-sync
+    --access-usm
+    --access-olox20
+    --access-denied-portal
+    --access-global-address-book-disabled
+    --access-public-folder-editable
+'
+EXTENDEDUSEROPTIONS='
+    --email1
+    --mailenabled
+    --birthday
+    --anniversary
+    --branches
+    --business_category
+    --postal_code_business
+    --state_business
+    --street_business
+    --telephone_callback
+    --city_home
+    --commercial_register
+    --country_home
+    --email2
+    --email3
+    --employeetype
+    --fax_business
+    --fax_home
+    --fax_other
+    --imapserver
+    --imaplogin
+    --smtpserver
+    --instant_messenger1
+    --instant_messenger2
+    --telephone_ip
+    --telephone_isdn
+    --mail_folder_drafts_name
+    --mail_folder_sent_name
+    --mail_folder_spam_name
+    --mail_folder_trash_name
+    --mail_folder_archive_full_name
+    --manager_name
+    --marital_status
+    --cellular_telephone1
+    --cellular_telephone2
+    --info
+    --nickname
+    --number_of_children
+    --note
+    --number_of_employee
+    --telephone_pager
+    --password_expired
+    --telephone_assistant
+    --telephone_business1
+    --telephone_business2
+    --telephone_car
+    --telephone_company
+    --telephone_home1
+    --telephone_home2
+    --telephone_other
+    --position
+    --postal_code_home
+    --profession
+    --telephone_radio
+    --room_number
+    --sales_volume
+    --city_other
+    --country_other
+    --middle_name
+    --postal_code_other
+    --state_other
+    --street_other
+    --spouse_name
+    --state_home
+    --street_home
+    --suffix
+    --tax_id
+    --telephone_telex
+    --title
+    --telephone_ttytdd
+    --uploadfilesizelimit
+    --uploadfilesizelimitperfile
+    --url
+    --userfield01
+    --userfield02
+    --userfield03
+    --userfield04
+    --userfield05
+    --userfield06
+    --userfield07
+    --userfield08
+    --userfield09
+    --userfield10
+    --userfield11
+    --userfield12
+    --userfield13
+    --userfield14
+    --userfield15
+    --userfield16
+    --userfield17
+    --userfield18
+    --userfield19
+    --userfield20
+    --city_business
+    --country_business
+    --assistant_name
+    --telephone_primary
+    --categories
+    --passwordmech
+    --mail_folder_confirmed_ham_name
+    --mail_folder_confirmed_spam_name
+    --defaultsenderaddress
+    --foldertree
+    --primary-account-name
+    --gui_spam_filter_capabilities_enabled
+'
+export PATH=$PATH:$OXBINPATH
+
+_ox_module_access_combinations() {
+    COMPREPLY=( $( compgen -W "$(grep -E '^\w' $MODULEACCESSFILE | cut -d= -f1)" -- "$cur" ) )
+}
+
+_ox_master_admin_login() {
+    local oxadm=$(grep -v '#' /opt/open-xchange/etc/mpasswd 2>/dev/null| cut -d: -f1)
+    if [ -z "$oxadm" ]; then
+        COMPREPLY=( $( compgen -W "oxadminmaster" -- "$cur" ) )
+    else
+        COMPREPLY=( $( compgen -W "$oxadm" -- "$cur" ) )
+    fi
+}
+
+_ox_true_false(){
+    COMPREPLY=( $( compgen -W 'true false' -- "$cur" ) )
+}
+
+_ox_on_off(){
+    COMPREPLY=( $( compgen -W 'on off' -- "$cur" ) )
+}
+
+_have registerdatabase &&
+_ox_registerdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -n -H -u -d -p -m -M -x -l -o -a
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --name
+    --hostname
+    --dbuser
+    --dbdriver
+    --dbpasswd
+    --master
+    --masterid
+    --maxunit
+    --poolhardlimit
+    --poolinitial
+    --poolmax
+    --create-userdb-schemas
+    --userdb-schema-count
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        -m|--master|-l|--poolhardlimit)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_registerdatabase_completions registerdatabase
+
+_have unregisterdatabase &&
+_ox_unregisterdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -i -n
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --id
+    --name
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_unregisterdatabase_completions unregisterdatabase
+
+_have changedatabase &&
+_ox_changedatabase_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -i -n -H -u -d -p -x -l -o -a
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --id
+    --name
+    --hostname
+    --dbuser
+    --dbdriver
+    --dbpasswd
+    --maxunit
+    --poolhardlimit
+    --poolinitial
+    --poolmax
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        -l|--poolhardlimit)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changedatabase_completions changedatabase
+
+_have listdatabase &&
+_ox_listdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -s
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --searchpattern
+    --csv
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listdatabase_completions listdatabase
+
+_have registerfilestore &&
+_ox_registerfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -t -s -x
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --storepath
+    --storesize
+    --maxcontexts
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_registerfilestore_completions registerfilestore
+
+_have unregisterfilestore &&
+_ox_unregisterfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -i
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --id
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_unregisterfilestore_completions unregisterfilestore
+
+_have changefilestore &&
+_ox_changefilestore_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -i -t -s -x
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --id
+    --storepath
+    --storesize
+    --maxcontexts
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changefilestore_completions changefilestore
+
+_have listfilestore &&
+_ox_listfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -s -u
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --searchpattern
+    --omitUsage
+    --csv
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listfilestore_completions listfilestore
+
+_have createcontext &&
+_ox_createcontext_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -N -u -d -g -s -p -e -l -t -q -L -F -D
+    $JAVACLTCOREOPTS
+    --csv-import
+    --contextid
+    --adminuser
+    --adminpass
+    --contextname
+    --username
+    --displayname
+    --givenname
+    --surname
+    --password
+    --email
+    --language
+    --timezone
+    --quota
+    --extendedoptions
+    --addmapping
+    --destination-store-id
+    --destination-database-id
+    --config
+    --remove-config
+    --access-combination-name
+    --schema
+    --schema-strategy
+    $ACCESSCOMBINATIONOPTIONS
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        --access-combination-name)
+            _ox_module_access_combinations
+            return 0
+            ;;
+        --access-*)
+            _ox_on_off
+            return 0
+            ;;
+        --csv-import)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_createcontext_completions createcontext
+
+_have changecontext &&
+_ox_changecontext_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -N -q -L -R
+    $JAVACLTCOREOPTS
+    --csv-import
+    --contextid
+    --adminuser
+    --adminpass
+    --contextname
+    --quota
+    --extendedoptions
+    --addmapping
+    --removemapping
+    --config
+    --remove-config
+    --access-combination-name
+    --capabilities-to-add
+    --capabilities-to-remove
+    --capabilities-to-drop
+    --quota-module
+    --quota-value
+    $ACCESSCOMBINATIONOPTIONS
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        --access-combination-name)
+            _ox_module_access_combinations
+            return 0
+            ;;
+        --access-*)
+            _ox_on_off
+            return 0
+            ;;
+        --quota-module)
+            COMPREPLY=( $( compgen -W 'task calendar contact infostore attachment' -- "$cur" ) )
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changecontext_completions changecontext
+
+_have deletecontext &&
+_ox_deletecontext_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -c -N
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --contextid
+    --contextname
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deletecontext_completions deletecontext
+
+_have listcontext &&
+_ox_listcontext_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -s \
+    $JAVACLTCOREOPTS
+    --adminuser
+    --adminpass
+    --csv
+    --searchpattern
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listcontext_completions listcontext
+
+_have createuser &&
+_ox_createuser_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -N -u -d -g -s -p -e -l -t -x -z -a -f -o -q
+    $JAVACLTCOREOPTS
+    --extendedoptions
+    --csv-import
+    --contextid
+    --adminuser
+    --adminpass
+    --contextname
+    --username
+    --displayname
+    --givenname
+    --surname
+    --password
+    --email
+    --language
+    --timezone
+    --department
+    --company
+    --aliases
+    --access-combination-name
+    --filestore
+    --owner
+    --quota
+    --addguipreferences
+    --config
+    --remove-config
+    --drive-user-folder-mode
+    $EXTENDEDUSEROPTIONS
+    $ACCESSCOMBINATIONOPTIONS
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        --access-combination-name)
+            _ox_module_access_combinations
+            return 0
+            ;;
+        --access-*)
+            _ox_on_off
+            return 0
+            ;;
+        --csv-import)
+            _filedir
+            return 0
+            ;;
+        --mailenabled|--password_expired|--gui_spam_filter_capabilities_enabled)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_createuser_completions createuser
+
+_have changeuser &&
+_ox_changeuser_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -u -d -g -s -p -e -l -t -x -z -a -q
+    $JAVACLTCOREOPTS
+    --extendedoptions
+    --contextid
+    --adminuser
+    --adminpass
+    --contextname
+    --username
+    --displayname
+    --givenname
+    --surname
+    --password
+    --email
+    --language
+    --timezone
+    --department
+    --company
+    --aliases
+    --access-combination-name
+    --capabilities-to-add
+    --capabilities-to-remove
+    --capabilities-to-drop
+    --personal
+    --quota
+    --convert-drive-user-folders
+    --addguipreferences
+    --removeguipreferences
+    --config
+    --remove-config
+    $EXTENDEDUSEROPTIONS
+    $ACCESSCOMBINATIONOPTIONS
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        --access-combination-name)
+            _ox_module_access_combinations
+            return 0
+            ;;
+        --access-*)
+            _ox_on_off
+            return 0
+            ;;
+        --csv-import)
+            _filedir
+            return 0
+            ;;
+        --mailenabled|--password_expired|--gui_spam_filter_capabilities_enabled)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changeuser_completions changeuser
+
+_have listuser &&
+_ox_listuser_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -s
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --csv
+    --includeguests
+    --excludeusers
+    --searchpattern
+    --ignorecase
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listuser_completions listuser
+
+_have deleteuser &&
+_ox_deleteuser_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -u -r
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --userid
+    --username
+    --reassign
+    --no-reassign
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteuser_completions deleteuser
+
+_have creategroup &&
+_ox_creategroup_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -n -d -a
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --name
+    --displayname
+    --addmembers
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_creategroup_completions creategroup
+
+_have changegroup &&
+_ox_changegroup_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -n -d -a -r
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --groupid
+    --name
+    --displayname
+    --addmembers
+    --removemembers
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changegroup_completions changegroup
+
+_have deletegroup &&
+_ox_deletegroup_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -n
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --name
+    --groupid
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deletegroup_completions deletegroup
+
+_have listgroup &&
+_ox_listgroup_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -s
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --csv
+    --searchpattern
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listgroup_completions listgroup
+
+_have createresource &&
+_ox_createresource_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -n -d -a -D -e
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --name
+    --displayname
+    --available
+    --description
+    --email
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -a|--available)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_createresource_completions createresource
+
+_have changeresource &&
+_ox_changeresource_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -n -d -a -D -e
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --resourceid
+    --name
+    --displayname
+    --available
+    --description
+    --email
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -a|--available)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changeresource_completions changeresource
+
+_have deleteresource &&
+_ox_deleteresource_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -i -n
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --name
+    --resourceid
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteresource_completions deleteresource
+
+_have listresource &&
+_ox_listresource_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -c -A -P -s
+    $JAVACLTCOREOPTS
+    --contextid
+    --adminuser
+    --adminpass
+    --csv
+    --searchpattern
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listresource_completions listresource
+
+_have changeaccessglobal &&
+_ox_changeaccessglobal_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -A -P -f -a
+    $JAVACLTCOREOPTS
+    --extendedoptions
+    --filter
+    --access-combination-name
+    $ACCESSCOMBINATIONOPTIONS    
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        --access-combination-name)
+            _ox_module_access_combinations
+            return 0
+            ;;
+        --access-*)
+            _ox_on_off
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changeaccessglobal_completions changeaccessglobal
+
+_have oxinstaller &&
+_ox_installer_completions() {
+    local cur prev commandlist
+
+    commandlist='
+    --servername
+    --imapserver
+    --smtpserver
+    --mail-login-src
+    --mail-server-src
+    --transport-server-src
+    --configdb-user
+    --configdb-pass
+    --configdb-readhost
+    --configdb-writehost
+    --configdb-dbname
+    --servermemory
+    --clt-memory
+    --configdb-readport
+    --configdb-writeport
+    --tmpdir-path
+    --master-pass
+    --master-user
+    --jkroute
+    --object-link-hostname
+    --extras-link
+    --maxSession
+    --sessionDefLifeTime
+    --disableauth
+    --no-license
+    --add-license
+    --name-of-oxcluster
+    --network-listener-host
+    --ajp-bind-port
+    '
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        --mail-login-src)
+            COMPREPLY=( $( compgen -W 'login mail name' -- "$cur" ) )
+            return 0
+            ;;
+        --mail-server-src|--transport-server-src)
+            COMPREPLY=( $( compgen -W 'user global' -- "$cur" ) )
+            return 0
+            ;;
+        --tmpdir-path)
+            _filedir -d
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_installer_completions oxinstaller
+
+_have initconfigdb &&
+_ox_initconfigdb_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -i
+    --configdb-user
+    --configdb-pass
+    --configdb-host
+    --configdb-port
+    --configdb-dbname
+    --addon-sql
+    --mysql-root-user
+    --mysql-root-passwd
+    '
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_initconfigdb_completions initconfigdb
+
+_have showruntimestats &&
+_ox_showruntimestats_completions() {
+    local cur prev commandlist
+
+    commandlist="-h -H -p -T -J -P -x -r -o -t -a -s -d -i -j -u -c -g -z -m -M -y -I -f -e -n -R
+    $JAVACLTCOREOPTS
+    --host
+    --port
+    --timeout
+    --jmxauthuser
+    --jmxauthpassword
+    --xchangestats
+    --threadpoolstats
+    --runtimestats
+    --osstats
+    --threadingstats
+    --allstats
+    --showoperations
+    --dooperation
+    --sessionstats
+    --cachestats
+    --usmsessionstats
+    --clusterstats
+    --grizzlystats
+    --pnsstats
+    --websocketstats
+    --gcstats
+    --memory
+    --Memory
+    --documentconverterstats
+    --imageconverterstats
+    --officestats
+    --eventstats
+    --generalstats
+    --mailinterfacestats
+    --poolingstats
+    --callmonitorstats
+    --misc
+    --overview
+    --memorypool
+    --niobufferstats
+    --rtstats
+    "
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_showruntimestats_completions showruntimestats
+
+_have oxsysreport &&
+_ox_oxsysreport_completions() {
+    local cur prev commandlist
+
+    commandlist='-D
+    --tempdir
+    --logdir
+    --log-archive
+    --keep-tmp-files
+    --thread-dump
+    --heap-dump
+    --report-client
+    --skip-compression
+    --skip-system-tools
+    --exclude-old-logs
+    --exclude-ox-secrets
+    '
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        --tempdir|--logdir)
+            _filedir -d
+            return 0
+            ;;
+        --log-archive)
+            _filedir
+            return 0
+            ;;
+        --keep-tmp-files|--thread-dump|--heap-dump|--report-client|--skip-compression|--skip-system-tools|--exclude-ox-secrets)
+            _ox_true_false
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_oxsysreport_completions oxsysreport
+
+_have logconf &&
+_ox_logconf_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -c -cf -d -h -H -l -la -le -lf -ll -oec -p -P -s -u -U
+    --add
+    --context
+    --clear-filters
+    --delete
+    --help
+    --JMX-Host
+    --level
+    --list-appenders
+    --list-exception-category
+    --list-filters
+    --list-loggers
+    --override-exception-categories
+    --JMX-Password
+    --JMX-Port
+    --responsetimeout
+    --session
+    --user
+    --JMX-User
+    '
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -oec|--override-exception-categories)
+            COMPREPLY=( $( compgen -W 'ERROR USER_INPUT CONFIGURATION PERMISSION_DENIED TRY_AGAIN CONNECTIVITY SERVICE_DOWN TRUNCATED CONFLICT CAPACITY WARNING' -- "$cur" ) )
+            return 0
+            ;;
+        -l|--level)
+            COMPREPLY=( $( compgen -W 'OFF ERROR WARN INFO DEBUG TRACE ALL' -- "$cur" ) )
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_logconf_completions logconf
+
+_have allpluginsloaded &&
+_ox_allpluginsloaded_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -H -l -p -s 
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_allpluginsloaded_completions allpluginsloaded
+
+_have calculatefilechecksums &&
+_ox_calculatefilechecksums_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -C -d -h -H -l -p -P -s 
+    --adminpass
+    --adminuser
+    --calculate
+    --context
+    --database
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_calculatefilechecksums_completions calculatefilechecksums
+
+_have changeserver &&
+_ox_changeserver_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -m -s -A -P 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --schema-name
+    --server-id'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_changeserver_completions changeserver
+
+_have checkconsistency &&
+_ox_checkconsistency_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -h -H -i -l -o -p -r -s -y 
+    --action
+    --help
+    --host
+    --login
+    --password
+    --policy
+    --policy-action
+    --port
+    --responsetimeout
+    --source
+    --source-id'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -a|--action)
+            COMPREPLY=( $( compgen -W 'list_unassigned list_missing repair repair_configdb check_configdb' -- "$cur" ) )
+            return 0
+            ;;
+        -o|--source)
+            COMPREPLY=( $( compgen -W 'database context filestore all' -- "$cur" ) )
+            return 0
+            ;;
+        -r|--policy)
+            COMPREPLY=( $( compgen -W 'missing_entry_for_file missing_file_for_attachment missing_file_for_infoitem missing_file_for_snippet missing_file_for_vcard' -- "$cur" ) )
+            return 0
+            ;;
+        -y|--policy-action)
+            COMPREPLY=( $( compgen -W 'create_admin_infoitem delete create_dummy ' -- "$cur" ) )
+            return 0
+            ;;
+    esac
+
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_checkconsistency_completions checkconsistency
+
+_have checkcountsconsistency &&
+_ox_checkcountsconsistency_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_checkcountsconsistency_completions checkcountsconsistency
+
+_have checkdatabase &&
+_ox_checkdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P 
+    --adminpass
+    --adminuser
+    --csv
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_checkdatabase_completions checkdatabase
+
+_have checkloginmappings &&
+_ox_checkloginmappings_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -A -c -h -H -l -p -P -s 
+    --all
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_checkloginmappings_completions checkloginmappings
+
+_have clearpreviewcache &&
+_ox_clearpreviewcache_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -A -c -h -H -l -p -P -s 
+    --all
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_clearpreviewcache_completions clearpreviewcache
+
+_have closesessions &&
+_ox_closesessions_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -H -l -p -P -s 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_closesessions_completions closesessions
+
+_have createschema &&
+_ox_createschema_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -i 
+    --adminpass
+    --adminuser
+    --csv
+    --environment
+    --help
+    --id
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_createschema_completions createschema
+
+_have createschemas &&
+_ox_createschemas_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -i -n 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --id
+    --name
+    --nonl
+    --responsetimeout
+    --userdb-schema-count'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_createschemas_completions createschemas
+
+_have datamining &&
+_ox_datamining_completions() {
+    local cur prev commandlist
+
+    commandlist='-d -h -n -o -p -r -u -v 
+    --dbName
+    --dbPassword
+    --dbPort
+    --dbUser
+    --help
+    --hostname
+    --reportfilePath
+    --verbose'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_datamining_completions datamining
+
+_have dbmigrations &&
+_ox_dbmigrations_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -h -H -l -ll -n -p -P -r -s -u 
+    --adminpass
+    --adminuser
+    --force-unlock
+    --help
+    --host
+    --list-locks
+    --login
+    --name
+    --password
+    --port
+    --responsetimeout
+    --run'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_dbmigrations_completions dbmigrations
+
+_have deduplicatecontacts &&
+_ox_deduplicatecontacts_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -e -f -h -H -l -m -p -P -s 
+    --adminpass
+    --adminuser
+    --context
+    --execute
+    --folder
+    --help
+    --host
+    --login
+    --max
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deduplicatecontacts_completions deduplicatecontacts
+
+_have deletecontextgroup &&
+_ox_deletecontextgroup_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -g -h -p -P -s 
+    --adminpass
+    --adminuser
+    --context-group-id
+    --help
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deletecontextgroup_completions deletecontextgroup
+
+_have deleteemptyschemas &&
+_ox_deleteemptyschemas_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -i -n 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --id
+    --name
+    --nonl
+    --responsetimeout
+    --schema
+    --schemas-to-keep'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteemptyschemas_completions deleteemptyschemas
+
+_have deleteinvisible &&
+_ox_deleteinvisible_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteinvisible_completions deleteinvisible
+
+_have deletepublication &&
+_ox_deletepublication_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -u -m -e -i -f -v 
+    --adminpass
+    --adminuser
+    --contextid
+    --entity-id
+    --environment
+    --force
+    --help
+    --module
+    --nonl
+    --publication-url
+    --responsetimeout
+    --userid
+    --verbose'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deletepublication_completions deletepublication
+
+_have deleteregisteredpushuser &&
+_ox_deleteregisteredpushuser_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -H -i -l -p -P -s -u 
+    --adminpass
+    --adminuser
+    --client
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout
+    --user'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteregisteredpushuser_completions deleteregisteredpushuser
+
+_have deleteuserfeedback &&
+_ox_deleteuserfeedback_completions() {
+    local cur prev commandlist
+
+    commandlist='-e -g -h -s -t -U 
+    --api-root
+    --api-user
+    --context-group
+    --end-time
+    --help
+    --start-time
+    --type'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_deleteuserfeedback_completions deleteuserfeedback
+
+_have diagnostics &&
+_ox_diagnostics_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -al -c -h -p -r -s -v 
+    --charsets
+    --charsets-long
+    --cipher-suites
+    --help
+    --port
+    --protocols
+    --responsetimeout
+    --server
+    --version'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_diagnostics_completions diagnostics
+
+_have disableallcontext &&
+_ox_disableallcontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_disableallcontext_completions disableallcontext
+
+_have disablecontext &&
+_ox_disablecontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_disablecontext_completions disablecontext
+
+_have disableschema &&
+_ox_disableschema_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -m -r 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --rmi-hosts
+    --schema'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_disableschema_completions disableschema
+
+_have dumpschema &&
+_ox_dumpschema_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -m -o -r 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --out
+    --responsetimeout
+    --rmi-host
+    --schema'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -o|--out)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_dumpschema_completions dumpschema
+
+_have enableallcontext &&
+_ox_enableallcontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_enableallcontext_completions enableallcontext
+
+_have enablecontext &&
+_ox_enablecontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_enablecontext_completions enablecontext
+
+_have enableschema &&
+_ox_enableschema_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -m -r 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --rmi-hosts
+    --target-schema'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_enableschema_completions enableschema
+
+_have existscontext &&
+_ox_existscontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_existscontext_completions existscontext
+
+_have existsuser &&
+_ox_existsuser_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -i -u -d 
+    --adminpass
+    --adminuser
+    --contextid
+    --displayname
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --userid
+    --username'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_existsuser_completions existsuser
+
+_have exportuserfeedback &&
+_ox_exportuserfeedback_completions() {
+    local cur prev commandlist
+
+    commandlist='-e -g -h -s -t -U 
+    --api-root
+    --api-user
+    --context-group
+    --delimiter
+    --end-time
+    --help
+    --start-time
+    --type'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_exportuserfeedback_completions exportuserfeedback
+
+_have extractJULModifications &&
+_ox_extractJULModifications_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -i -o 
+    --help
+    --in
+    --out'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -o|--out|-i|--in)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_extractJULModifications_completions extractJULModifications
+
+_have extractLog4JModifications &&
+_ox_extractLog4JModifications_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -i -o 
+    --help
+    --in
+    --out'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -o|--out|-i|--in)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_extractLog4JModifications_completions extractLog4JModifications
+
+_have forceupdatetask &&
+_ox_forceupdatetask_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -n -p -P -s -t 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --name
+    --port
+    --responsetimeout
+    --server
+    --task'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_forceupdatetask_completions forceupdatetask
+
+_have generatempasswd &&
+_ox_generatempasswd_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -e -f -h -P
+    --adminuser
+    --encryption
+    --mpasswdfile
+    --help
+    --adminpass'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -f|--mpasswdfile)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_generatempasswd_completions generatempasswd
+
+_have getaccesscombinationnameforcontext &&
+_ox_getaccesscombinationnameforcontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getaccesscombinationnameforcontext_completions getaccesscombinationnameforcontext
+
+_have getaccesscombinationnameforuser &&
+_ox_getaccesscombinationnameforuser_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -i -u 
+    --adminpass
+    --adminuser
+    --contextid
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --userid
+    --username'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getaccesscombinationnameforuser_completions getaccesscombinationnameforuser
+
+_have getadminid &&
+_ox_getadminid_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getadminid_completions getadminid
+
+_have getcontextcapabilities &&
+_ox_getcontextcapabilities_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getcontextcapabilities_completions getcontextcapabilities
+
+_have getmissingservices &&
+_ox_getmissingservices_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -H -l -n -p -s 
+    --help
+    --host
+    --login
+    --name
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getmissingservices_completions getmissingservices
+
+_have getmoduleaccessforcontext &&
+_ox_getmoduleaccessforcontext_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getmoduleaccessforcontext_completions getmoduleaccessforcontext
+
+_have getpublication &&
+_ox_getpublication_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -u -m -e -i 
+    --adminpass
+    --adminuser
+    --contextid
+    --entity-id
+    --environment
+    --help
+    --module
+    --nonl
+    --publication-url
+    --responsetimeout
+    --userid'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getpublication_completions getpublication
+
+_have getschemaname &&
+_ox_getschemaname_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getschemaname_completions getschemaname
+
+_have getusercapabilities &&
+_ox_getusercapabilities_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -i -u 
+    --adminpass
+    --adminuser
+    --contextid
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --userid
+    --username'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getusercapabilities_completions getusercapabilities
+
+_have getuserconfigurationsource &&
+_ox_getuserconfigurationsource_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -a -c -h -i -o -p -P -s 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --port
+    --responsetimeout
+    --server
+    --user-capabilities
+    --user-configuration
+    --userid'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_getuserconfigurationsource_completions getuserconfigurationsource
+
+_have heapdump &&
+_ox_heapdump_completions() {
+    local cur prev commandlist
+
+    commandlist='-f -h -H -l -p -s 
+    --file
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -f|--file)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_heapdump_completions heapdump
+
+_have includestacktrace &&
+_ox_includestacktrace_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -d -e -h -p -P -s -u 
+    --adminpass
+    --adminuser
+    --context
+    --disable
+    --enable
+    --help
+    --port
+    --responsetimeout
+    --server
+    --user'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_includestacktrace_completions includestacktrace
+
+_have installbundle &&
+_ox_installbundle_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -p -l -pw'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_installbundle_completions installbundle
+
+_have jobcontrol &&
+_ox_jobcontrol_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -l -d -t -f 
+    --adminpass
+    --adminuser
+    --contextid
+    --delete
+    --details
+    --environment
+    --flush
+    --help
+    --list
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_jobcontrol_completions jobcontrol
+
+_have lastlogintimestamp &&
+_ox_lastlogintimestamp_completions() {
+    local cur prev commandlist
+
+    commandlist='-c -d -h -H -i -l -p -s -t -u 
+    --client
+    --context
+    --datepattern
+    --help
+    --host
+    --listclients
+    --login
+    --password
+    --port
+    --responsetimeout
+    --user'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -t|--client)
+            COMPREPLY=( $( compgen -W "$(lastlogintimestamp --listclients | grep '|' | grep -v 'Client ID' | awk '{ print $2 }')" -- "$cur" ) )
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_lastlogintimestamp_completions lastlogintimestamp
+
+_have listconfigdiff &&
+_ox_listconfigdiff_completions() {
+    local cur prev commandlist
+
+    commandlist='-f -h 
+    --file
+    --help'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -f|--file)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listconfigdiff_completions listconfigdiff
+
+_have listcontextsbydatabase &&
+_ox_listcontextsbydatabase_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -d -n 
+    --adminpass
+    --adminuser
+    --csv
+    --database
+    --environment
+    --help
+    --name
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listcontextsbydatabase_completions listcontextsbydatabase
+
+_have listcontextsbyfilestore &&
+_ox_listcontextsbyfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -f 
+    --adminpass
+    --adminuser
+    --csv
+    --environment
+    --filestore
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listcontextsbyfilestore_completions listcontextsbyfilestore
+
+_have listdatabaseschema &&
+_ox_listdatabaseschema_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -s 
+    --adminpass
+    --adminuser
+    --csv
+    --environment
+    --help
+    --nonl
+    --only-empty-schemas
+    --responsetimeout
+    --searchpattern'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listdatabaseschema_completions listdatabaseschema
+
+_have listExecutedUpdateTasks &&
+_ox_listExecutedUpdateTasks_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -h -n -p -P -s 
+    --adminpass
+    --adminuser
+    --help
+    --name
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listExecutedUpdateTasks_completions listExecutedUpdateTasks
+
+_have listpushusers &&
+_ox_listpushusers_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -h -H -l -p -P -s 
+    --adminpass
+    --adminuser
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listpushusers_completions listpushusers
+
+_have listregisteredpushusers &&
+_ox_listregisteredpushusers_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -h -H -l -p -P -s 
+    --adminpass
+    --adminuser
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listregisteredpushusers_completions listregisteredpushusers
+
+_have listreloadables &&
+_ox_listreloadables_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -p -s 
+    --help
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listreloadables_completions listreloadables
+
+_have listserver &&
+_ox_listserver_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -s 
+    --adminpass
+    --adminuser
+    --csv
+    --environment
+    --help
+    --nonl
+    --responsetimeout
+    --searchpattern'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listserver_completions listserver
+
+_have listshares &&
+_ox_listshares_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -H -i -l -p -P -s -T 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout
+    --token
+    --userid'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listshares_completions listshares
+
+_have listUpdateTaskNamespaces &&
+_ox_listUpdateTaskNamespaces_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -h -n -p -P -s 
+    --adminpass
+    --adminuser
+    --help
+    --namespaces-only
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listUpdateTaskNamespaces_completions listUpdateTaskNamespaces
+
+_have listuserfilestores &&
+_ox_listuserfilestores_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -m -f 
+    --adminpass
+    --adminuser
+    --contextid
+    --environment
+    --filestore
+    --help
+    --master
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listuserfilestores_completions listuserfilestores
+
+_have listusersbyaliasdomain &&
+_ox_listusersbyaliasdomain_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -c -A -P -d 
+    --adminpass
+    --adminuser
+    --alias-domain
+    --contextid
+    --csv
+    --environment
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_listusersbyaliasdomain_completions listusersbyaliasdomain
+
+_have logincounter &&
+_ox_logincounter_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -e -h -H -l -p -r -s 
+    --aggregate
+    --end
+    --help
+    --host
+    --login
+    --password
+    --port
+    --regex
+    --responsetimeout
+    --start'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_logincounter_completions logincounter
+
+_have movecontextdatabase &&
+_ox_movecontextdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N -d -n 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --database
+    --environment
+    --help
+    --name
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_movecontextdatabase_completions movecontextdatabase
+
+_have movecontextfilestore &&
+_ox_movecontextfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -c -N -f 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --filestore
+    --help
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_movecontextfilestore_completions movecontextfilestore
+
+_have moveuserfilestore &&
+_ox_moveuserfilestore_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -i -u -A -P -c -N -f 
+    --adminpass
+    --adminuser
+    --contextid
+    --contextname
+    --environment
+    --filestore
+    --help
+    --nonl
+    --responsetimeout
+    --userid
+    --username'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_moveuserfilestore_completions moveuserfilestore
+
+_have parsei18nyaml &&
+_ox_parsei18nyaml_completions() {
+    local cur prev commandlist
+
+    commandlist='-d -f -h -o -y 
+    --date
+    --force
+    --help
+    --output
+    --yamlfile'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -o|--output|-y|--yamlfile)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_parsei18nyaml_completions parsei18nyaml
+
+_have recalculatefilestoreusage &&
+_ox_recalculatefilestoreusage_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -p -P -s -u 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --port
+    --responsetimeout
+    --scope
+    --server
+    --user'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        --scope)
+            COMPREPLY=( $( compgen -W 'all context user' -- "$cur" ) )
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_recalculatefilestoreusage_completions recalculatefilestoreusage
+
+_have registerserver &&
+_ox_registerserver_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -n 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --name
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_registerserver_completions registerserver
+
+_have reloadconfiguration &&
+_ox_reloadconfiguration_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -p -s
+    --help
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_reloadconfiguration_completions reloadconfiguration
+
+_have removeshares &&
+_ox_removeshares_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -f -h -H -i -l -p -P -s -T 
+    --adminpass
+    --adminuser
+    --context
+    --force
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout
+    --token
+    --userid'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_removeshares_completions removeshares
+
+_have replayschema &&
+_ox_replayschema_completions() {
+    local cur prev commandlist
+
+    commandlist='
+    --adminpass
+    --adminuser
+    --in
+    --rmi-host
+    --source-schema
+    --target-cluster-id'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -i|--in)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_replayschema_completions replayschema
+
+_have restoregabdefaults &&
+_ox_restoregabdefaults_completions() {
+    local cur prev commandlist
+
+    commandlist='-c -h -H -l -p -s 
+    --context
+    --help
+    --host
+    --login
+    --password
+    --port
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_restoregabdefaults_completions restoregabdefaults
+
+_have runallupdate &&
+_ox_runallupdate_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -e -h -p -P -s 
+    --adminpass
+    --adminuser
+    --error
+    --help
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_runallupdate_completions runallupdate
+
+_have runupdate &&
+_ox_runupdate_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -c -h -n -p -P -s 
+    --adminpass
+    --adminuser
+    --context
+    --help
+    --name
+    --port
+    --responsetimeout
+    --server'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_runupdate_completions runupdate
+
+_have sanitizefilemimetypes &&
+_ox_sanitizefilemimetypes_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -c -h -H -i -l -p -s 
+    --all
+    --context
+    --help
+    --host
+    --invalids
+    --login
+    --password
+    --port'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_sanitizefilemimetypes_completions sanitizefilemimetypes
+
+_have senduserfeedback &&
+_ox_senduserfeedback_completions() {
+    local cur prev commandlist
+
+    commandlist='-b -c -e -g -h -r -s -S -t -U 
+    --api-root
+    --api-user
+    --body
+    --compress
+    --context-group
+    --end-time
+    --help
+    --recipients
+    --start-time
+    --subject
+    --type'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_senduserfeedback_completions senduserfeedback
+
+_have showconfig &&
+_ox_showconfig_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -k -n -o -p -s -t 
+    --help
+    --key
+    --no-color
+    --only-key
+    --print-tags
+    --search
+    --tag'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_showconfig_completions showconfig
+
+_have showconfigdocu &&
+_ox_showconfigdocu_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -k -n -o -p -s -t 
+    --help
+    --key
+    --no-color
+    --only-key
+    --print-tags
+    --search
+    --tag'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_showconfigdocu_completions showconfigdocu
+
+_have touch-appsuite &&
+_ox_touch-appsuite_completions() {
+    local cur prev commandlist
+
+    commandlist='
+    --help
+    --timestamp'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_touch-appsuite_completions touch-appsuite
+
+_have triggerreloadconfiguration &&
+_ox_triggerreloadconfiguration_completions() {
+    local cur prev commandlist
+
+    commandlist='-d -f -h'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -f)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_triggerreloadconfiguration_completions triggerreloadconfiguration
+
+_have triggerupdatethemes &&
+_ox_triggerupdatethemes_completions() {
+    local cur prev commandlist
+
+    commandlist='-u -r -h'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_triggerupdatethemes_completions triggerupdatethemes
+
+_have unblockdatabase &&
+_ox_unblockdatabase_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -i -n 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --id
+    --name
+    --nonl
+    --responsetimeout
+    --schema'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_unblockdatabase_completions unblockdatabase
+
+_have unregisterserver &&
+_ox_unregisterserver_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -A -P -i -n 
+    --adminpass
+    --adminuser
+    --environment
+    --help
+    --id
+    --name
+    --nonl
+    --responsetimeout'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_unregisterserver_completions unregisterserver
+
+_have upgradeschemata &&
+_ox_upgradeschemata_completions() {
+    local cur prev commandlist
+
+    commandlist='-h -n -H -p -l -s -m -f -k -A -P 
+    --adminpass
+    --adminuser
+    --environment
+    --force
+    --help
+    --host
+    --login
+    --nonl
+    --password
+    --port
+    --responsetimeout
+    --schema-name
+    --server-name
+    --skip-schemata'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_upgradeschemata_completions upgradeschemata
+
+_have xmlModifier &&
+_ox_xmlModifier_completions() {
+    local cur prev commandlist
+
+    commandlist='-a -d -h -i -m -o -r -s -x -z 
+    --add
+    --help
+    --id
+    --in
+    --out
+    --remove
+    --replace
+    --scr
+    --xpath
+    --zap'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -o|--out|-i|--in|-a|--add|-m|--remove|-r|--replace)
+            _filedir
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_xmlModifier_completions xmlModifier
