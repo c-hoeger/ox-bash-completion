@@ -2904,3 +2904,48 @@ _ox_xmlModifier_completions() {
 
     COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
 } && complete -F _ox_xmlModifier_completions xmlModifier
+
+_have guard &&
+_ox_guard_completions() {
+    local cur prev commandlist
+
+    commandlist='-A -P -c -d -D -e -f -g -h -i -j -m -n -o -p -r -s -t -u -w -x
+    --change-user
+    --context
+    --delete
+    --directory
+    --force
+    --guestreset
+    --help
+    --id
+    --import
+    --init
+    --jmx-host
+    --jmx-password
+    --jmx-port
+    --jmx-user
+    --newEmail
+    --port
+    --remove-pin
+    --repair
+    --reset
+    --responsetimeout
+    --server
+    --test
+    --upgrade'
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+
+    case $prev in
+        -A)
+            _ox_master_admin_login
+            return 0
+            ;;
+        -d|--directory)
+            _filedir -d
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -W "$commandlist" -- "$cur" ) )
+} && complete -F _ox_guard_completions guard
