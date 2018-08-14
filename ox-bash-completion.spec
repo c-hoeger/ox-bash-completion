@@ -1,6 +1,6 @@
 Name:          ox-bash-completion
 BuildArch:     noarch
-Version:       1.0.0
+Version:       1.0.1
 Release:       0
 Group:         Applications/Productivity
 License:       GPL-2.0
